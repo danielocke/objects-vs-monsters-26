@@ -28,6 +28,11 @@ class Game:
 
         self.state = 'game'
 
+        self.MAX_ENERGY = 100
+        self.energy     = 10
+        self.ENERGY_COOLDOWN = 500
+        self.energy_cd = self.ENERGY_COOLDOWN
+
     def main_loop(self):
 
         while True:
@@ -42,9 +47,31 @@ class Game:
                 quit()
 
     def _process_game_logic(self):
-        pass
+        if self.state == 'game':
+            self.energy_cd -= 1
+
+            if self.energy_cd < 1:
+                self.energy += 5
+                self.energy_cd = random.randint(self.ENERGY_COOLDOWN - 100, self.ENERGY_COOLDOWN + 100)
+                SFX['energy_gain'].play()
+
+            if self.energy > self.MAX_ENERGY:
+                self.energy = self.MAX_ENERGY
 
     def _draw(self):
         self.screen.blit(self.background,(0,0))
+
+        # Drawing HUD
+        self.screen.blit(self.hud['energy_back'], (0,0))
+
+        X_OFFSET = 7
+        energy_bar = pygame.Surface(((self.energy/self.MAX_ENERGY) * (self.width - X_OFFSET),40))
+        energy_bar.set_alpha(200)
+        energy_bar.fill(COLOURS['purple'])
+        self.screen.blit(energy_bar, (X_OFFSET, 410))
+
+        self.screen.blit(self.hud['energy_front'], (0,0))
+
+        write(self.screen, str(self.energy), (20, 412), FONTS['small'], COLOURS['white_purple'])
 
         pygame.display.update()

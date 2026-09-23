@@ -25,3 +25,12 @@ class GameObject:
 
     def take_damage(self, amt):
         self.health -= amt
+
+class Unit(GameObject):
+    def __init__(self, position, sprite_name, scale=1, health = 100, attack_cooldown = 120):
+        super().__init__(position, sprite_name, scale=scale, health=health)
+        self.ATTACK_COOLDOWN = attack_cooldown
+        self.HOP_COOLDOWN = 180
+        self.atk_cd = self.ATTACK_COOLDOWN
+        self.hop_cd = self.HOP_COOLDOWN
+        

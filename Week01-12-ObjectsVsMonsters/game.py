@@ -5,7 +5,7 @@ from models import *
 from utils import *
 from fonts import FONTS, COLOURS
 from audio import SFX
-
+from grid  import Grid
 
 class Game:
     def __init__(self):
@@ -33,8 +33,16 @@ class Game:
         self.ENERGY_COOLDOWN = 500
         self.energy_cd = self.ENERGY_COOLDOWN
 
+        GRID_WIDTH  = 9
+        GRID_HEIGHT = 5
+        
+        self.grid = Grid(GRID_WIDTH, GRID_HEIGHT, self.width)
+    
     def main_loop(self):
-
+        self.grid.deploy_monster(1,'fortified')
+        self.grid.deploy_monster(2,'normal')
+        self.grid._deploy_unit(0, 0, 'microwave')
+        self.grid._deploy_unit(2, 2, 'blender')
         while True:
             self._process_input()
             self._process_game_logic()
@@ -55,12 +63,17 @@ class Game:
                 self.energy_cd = random.randint(self.ENERGY_COOLDOWN - 100, self.ENERGY_COOLDOWN + 100)
                 SFX['energy_gain'].play()
 
+            energy_mod = self.grid.update()
+
+            self.energy += energy_mod
+            
             if self.energy > self.MAX_ENERGY:
                 self.energy = self.MAX_ENERGY
 
     def _draw(self):
         self.screen.blit(self.background,(0,0))
 
+        self.grid.draw(self.screen)
         # Drawing HUD
         self.screen.blit(self.hud['energy_back'], (0,0))
 

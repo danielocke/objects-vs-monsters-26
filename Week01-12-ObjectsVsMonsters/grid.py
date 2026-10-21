@@ -82,7 +82,7 @@ class Grid:
         scale = 1 + 0.1 * row
         
         if unit_type == 'microwave':
-            self.tiles[row][col] = Unit(self.TILE_COORDS[row][col], 'microwave', self.projectiles.update, scale = scale)
+            self.tiles[row][col]     = Microwave(self.TILE_COORDS[row][col], scale = scale)
         if unit_type == 'blender':
                 self.tiles[row][col] = Blender(self.TILE_COORDS[row][col], self.projectiles.update, scale = scale)
         if unit_type == 'toaster':
@@ -108,3 +108,8 @@ class Grid:
                                            scale = scale
                                           )
                                   )
+    def on_click(self, mouse_pos):
+        for row in self.tiles:
+            for unit in row:
+                if unit and unit.clicked(mouse_pos):
+                    return unit.on_click()

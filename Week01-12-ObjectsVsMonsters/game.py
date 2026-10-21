@@ -32,6 +32,7 @@ class Game:
         self.energy     = 10
         self.ENERGY_COOLDOWN = 500
         self.energy_cd = self.ENERGY_COOLDOWN
+        self.mouse_down = False
 
         GRID_WIDTH  = 9
         GRID_HEIGHT = 5
@@ -54,6 +55,19 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit()
+
+        if self.state == 'game':
+            mouse = pygame.mouse.get_pressed()
+
+            # LMB
+            if mouse[0]:
+                self.mouse_down = True
+
+                energy_mod = self.grid.on_click(pygame.mouse.get_pos())
+
+                if energy_mod:
+                    self.energy += energy_mod
+
 
     def _process_game_logic(self):
         if self.state == 'game':

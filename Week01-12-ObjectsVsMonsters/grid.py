@@ -15,15 +15,16 @@ class Grid:
                             ]
 
         self.monsters = [set() for _ in range(num_rows)]
-
+        self.projectiles = set()
         self.num_rows = num_rows
         self.num_cols = num_cols
-
+        
         self.summon_x = summon_x
 
     def update(self):
         energy_mods = 0
         dead_monsters = set()
+        dead_projectiles = set()
 
         for row in range(self.num_rows):
 
@@ -42,8 +43,15 @@ class Grid:
                 if monster.health < 1:
                     dead_monsters.add(monster)
 
+        for proj in self.projectiles:
+            proj.update()
+            if proj.elapsed >= proj.lifespan:
+                dead_projectiles.add(proj)
+
         for row in self.monsters:
             row -= dead_monsters
+
+        self.projectiles -= dead_projectiles
 
         return energy_mods        
 
@@ -60,6 +68,9 @@ class Grid:
             for monster in row:
                 monster.draw(screen)
 
+        for proj in self.projectiles:
+            proj.draw(screen)
+
     def _in_tile(self, pos, row, col):
 
         scale = 1 + 0.1 * row
@@ -71,11 +82,11 @@ class Grid:
         scale = 1 + 0.1 * row
         
         if unit_type == 'microwave':
-            self.tiles[row][col] = Unit(self.TILE_COORDS[row][col], 'microwave', scale = scale)
+            self.tiles[row][col] = Unit(self.TILE_COORDS[row][col], 'microwave', self.projectiles.update, scale = scale)
         if unit_type == 'blender':
-                self.tiles[row][col] = Unit(self.TILE_COORDS[row][col], 'blender', scale = scale)
+                self.tiles[row][col] = Blender(self.TILE_COORDS[row][col], self.projectiles.update, scale = scale)
         if unit_type == 'toaster':
-                self.tiles[row][col] = Unit(self.TILE_COORDS[row][col], 'toaster', scale = scale)
+                self.tiles[row][col] = Toaster(self.TILE_COORDS[row][col], self.projectiles.update, scale = scale)
 
         SFX['deploy'].play()
 

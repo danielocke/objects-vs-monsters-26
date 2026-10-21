@@ -40,9 +40,10 @@ class Game:
     
     def main_loop(self):
         self.grid.deploy_monster(1,'fortified')
-        self.grid.deploy_monster(2,'normal')
+        self.grid.deploy_monster(2,'fortified')
         self.grid._deploy_unit(0, 0, 'microwave')
         self.grid._deploy_unit(2, 2, 'blender')
+        self.grid._deploy_unit(1, 1, 'toaster')
         while True:
             self._process_input()
             self._process_game_logic()

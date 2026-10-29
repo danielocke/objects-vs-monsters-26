@@ -113,3 +113,13 @@ class Grid:
             for unit in row:
                 if unit and unit.clicked(mouse_pos):
                     return unit.on_click()
+
+    def play_card(self, card):
+        for row in range(len(self.TILE_COORDS)):
+            
+            for col in range(len(self.TILE_COORDS[row])):
+                if self._in_tile(card.pos, row, col) and self._is_empty(row, col):        
+                    self._deploy_unit(row, col, card.card_type)
+                    return True
+
+        return False

@@ -268,7 +268,7 @@ class Card(GameObject):
 
     def draw(self, surface, energy):
         super().draw(surface)
-        unit_pos = self.pos - Vector2(self.unit.get_width()/2, self.unit.get_height/2)
+        unit_pos = self.pos - Vector2(self.unit.get_width()/2, self.unit.get_height()/2)
         text_pos = self.pos - Vector2(self.width/3, self.height/3)
 
         surface.blit(self.unit, unit_pos)

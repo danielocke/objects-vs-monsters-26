@@ -38,6 +38,16 @@ class Game:
         GRID_HEIGHT = 5
         
         self.grid = Grid(GRID_WIDTH, GRID_HEIGHT, self.width)
+
+        CARD_X = 155
+        CARD_Y = 39
+        CARD_SPACING = 69
+
+        self.cards = [
+            Card((CARD_X,                  CARD_Y), 'microwave', 10),
+            Card((CARD_X + 1*CARD_SPACING, CARD_Y), 'blender',   20),
+            Card((CARD_X + 2*CARD_SPACING, CARD_Y), 'toaster',   25),
+        ]
     
     def main_loop(self):
         self.grid.deploy_monster(1,'fortified')
@@ -61,6 +71,11 @@ class Game:
 
             # LMB
             if mouse[0]:
+                for card in self.cards:
+                    if not self.mouse_down and card.clicked(pygame.mouse.get_pos()):
+                        card.selected = True
+                        break
+
                 self.mouse_down = True
 
                 energy_mod = self.grid.on_click(pygame.mouse.get_pos())
@@ -68,6 +83,22 @@ class Game:
                 if energy_mod:
                     self.energy += energy_mod
 
+            if self.mouse_down and not mouse[0]:
+                
+                self.mouse_down = False
+
+                for card in self.cards:
+                    if card.selected:
+                        if self.energy < card.cost:
+                            SFX['error'].play()
+
+                        else:
+                            played = self.grid.play_card(card)
+                            if played:
+                                self.energy -= card.cost
+
+                        card.reset()
+                        break
 
     def _process_game_logic(self):
         if self.state == 'game':
@@ -85,6 +116,9 @@ class Game:
             if self.energy > self.MAX_ENERGY:
                 self.energy = self.MAX_ENERGY
 
+            for card in self.cards:
+                card.update(pygame.mouse.get_pos())
+
     def _draw(self):
         self.screen.blit(self.background,(0,0))
 
@@ -101,5 +135,8 @@ class Game:
         self.screen.blit(self.hud['energy_front'], (0,0))
 
         write(self.screen, str(self.energy), (20, 412), FONTS['small'], COLOURS['white_purple'])
+
+        for card in self.cards:
+            card.draw(self.screen, self.energy)
 
         pygame.display.update()

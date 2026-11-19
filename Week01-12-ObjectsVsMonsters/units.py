@@ -6,7 +6,7 @@ from models import Unit, Projectile
 
 class Blender(Unit):
     def __init__(self, position, add_proj_callback, scale=1):
-        super().__init__(position, 'blender', add_proj_callback, scale, health = 75)
+        super().__init__(position, 'blender', add_proj_callback=add_proj_callback, scale=scale, health = 75)
         self.strength = 15
 
     def _activate(self, monsters):
@@ -26,7 +26,7 @@ class Goo(Projectile):
 
 class Toaster(Unit):
     def __init__(self, position, add_proj_callback, scale=1):
-        super().__init__(position, 'toaster', add_proj_callback, scale, health = 75)
+        super().__init__(position, 'toaster', add_proj_callback=add_proj_callback, scale=scale, health = 75)
         self.strength = 8
 
     def _activate(self, monsters):
@@ -105,7 +105,7 @@ class Microwave(Unit):
 
 class Fridge(Unit):
     def __init__(self, position, create_effect_callback, grid_coordinate, scale=1):
-        super().__init__(position, 'fridge', create_effect_callback = create_effect_callback, scale = scale, health = 5000, attack_cooldown=1000)
+        super().__init__(position, 'fridge', create_effect_callback = create_effect_callback, scale = scale, health = 5000, attack_cooldown=1000, grid_coordinate = grid_coordinate)
         self.ready = False
         self.glow_level = 0
         self.MAX_GLOW   = 5
@@ -133,6 +133,9 @@ class Fridge(Unit):
         if self.ready:
             self.ready = False
             self.glow_level = 0
+            self.create_effect_callback([self.grid_coordinate[0]],'row', 'ice')
+            self.health = 0
+            SFX['freeze'].play()
 
     def draw(self, surface):
         blit_pos = self.pos - Vector2(self.width/2, self.height/2)

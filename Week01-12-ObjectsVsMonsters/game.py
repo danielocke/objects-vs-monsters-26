@@ -97,12 +97,18 @@ class Game:
                         card.selected = True
                         break
 
-                self.mouse_down = True
-
-                energy_mod = self.grid.on_click(pygame.mouse.get_pos())
+                energy_mod = 0
+                                
+                if not self.mouse_down:
+                    energy_mod = self.grid.on_click(pygame.mouse.get_pos())
 
                 if energy_mod:
                     self.energy += energy_mod
+
+                self.mouse_down = True
+
+
+                
 
             if self.mouse_down and not mouse[0]:
                 

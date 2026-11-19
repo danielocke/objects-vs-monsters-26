@@ -8,6 +8,7 @@ class TileEffect(GameObject):
     def __init__(self, position, sprite_name, lifespan, scale=1):
         super().__init__(position, sprite_name, Vector2(0,0), scale, 0)
         self.lifespan  = lifespan
+        self.effect_type = sprite_name
 
 
 class IceEffect(TileEffect):

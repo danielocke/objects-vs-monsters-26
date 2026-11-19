@@ -41,6 +41,7 @@ class Unit(GameObject):
         self.hop_speed = 2
         self.add_proj_callback = add_proj_callback
         self.create_effect_callback = create_effect_callback
+        self.grid_coordinate = grid_coordinate
     
     def update(self, monsters):
         super().update()
@@ -84,50 +85,62 @@ class Monster(GameObject):
         self.move_cd = self.MOVE_COOLDOWN
         self.pose_cd = self.POSE_COOLDOWN
         self.EAT_RANGE = 25
+        self.EFFECT_RANGE = 100
 
         self.pose = 'a'
         self.state = 'move'
 
-    def update(self, row, row_coords):
+        self.active_effects = set()
+
+    def update(self, row, row_coords, tile_effects):
         eat_tile = None
         for tile in range(len(row)):
+            if tile_effects[tile] and abs(row_coords[tile][0] - self.pos[0]) < self.scale*self.EFFECT_RANGE:
+                self.active_effects.add(tile_effects[tile].effect_type)
+
             if row[tile] and abs(row_coords[tile][0] - self.pos[0]) < self.scale * self.EAT_RANGE:
                 self.state = 'eat'
                 eat_tile = tile
                 break
             else:
                 self.state = 'move'
+        
+        
 
-        self.move_cd -= 1
-        self.pose_cd -= 1
+        if not 'ice_effect' in self.active_effects:
+            self.move_cd -= 1
+            self.pose_cd -= 1
+            if self.state == 'move':
+                
+                if self.move_cd < 1:
+                    self.move_cd = self.MOVE_COOLDOWN
+                    self._move()
 
-        if self.state == 'move':
-            
-            if self.move_cd < 1:
-                self.move_cd = self.MOVE_COOLDOWN
-                self._move()
+                if self.pose_cd < 1:
+                    self.pose = 'a' if self.pose == 'b' else 'b'
+                    self.sprite = self.sprites[self.pose]
+                    self.pose_cd = self.POSE_COOLDOWN
 
-            if self.pose_cd < 1:
-                self.pose = 'a' if self.pose == 'b' else 'b'
-                self.sprite = self.sprites[self.pose]
-                self.pose_cd = self.POSE_COOLDOWN
+            if self.state == 'eat':
+                        
+                if self.move_cd < 1:
+                    self.move_cd = self.MOVE_COOLDOWN
+                    self._eat(row[eat_tile])
 
-        if self.state == 'eat':
-                    
-            if self.move_cd < 1:
-                self.move_cd = self.MOVE_COOLDOWN
-                self._eat(row[eat_tile])
+                if self.pose_cd < 1:
+                    self.pose = 'a' if self.pose == 'eat' else 'eat'
+                    self.sprite = self.sprites[self.pose]
+                    self.pose_cd = self.POSE_COOLDOWN
 
-            if self.pose_cd < 1:
-                self.pose = 'a' if self.pose == 'eat' else 'eat'
-                self.sprite = self.sprites[self.pose]
-                self.pose_cd = self.POSE_COOLDOWN
+                    if self.pose == 'eat':
+                        SFX['chomp'].play()
 
-                if self.pose == 'eat':
-                    SFX['chomp'].play()
-
+        self.active_effects = set()
+    
+    
     def _eat(self, unit:Unit):
         unit.take_damage(self.strength)
+
 
 class Projectile(GameObject):
     def __init__(self, position, sprite_name, target, strength, scale=1, lifespan=30):

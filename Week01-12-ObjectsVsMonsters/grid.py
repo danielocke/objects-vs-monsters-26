@@ -1,6 +1,7 @@
 from models import *
 from units  import *
 from effects import *
+from monsters import *
 from pygame.math import Vector2
 
 TILE_RADIUS = 25
@@ -49,7 +50,7 @@ class Grid:
                     
 
             for monster in self.monsters[row]:
-                monster.update(self.tiles[row], self.TILE_COORDS[row])
+                monster.update(self.tiles[row], self.TILE_COORDS[row], self.tile_effects[row])
                 if monster.health < 1:
                     dead_objs.add(monster)
 
@@ -98,7 +99,7 @@ class Grid:
         if unit_type == 'microwave':
             self.tiles[row][col] = Microwave(self.TILE_COORDS[row][col], scale = scale)
         if unit_type == 'fridge':
-            self.tiles[row][col] = Fridge(self.TILE_COORDS[row][col], self.apply_tile_effect, scale = 1.1*scale)
+            self.tiles[row][col] = Fridge(self.TILE_COORDS[row][col], self.apply_tile_effect, scale = 1.1*scale, grid_coordinate = (row, col))
         if unit_type == 'blender':
             self.tiles[row][col] = Blender(self.TILE_COORDS[row][col], self.projectiles.update, scale = scale)
         if unit_type == 'toaster':
@@ -119,6 +120,8 @@ class Grid:
                                                     'fortified_monster_eat')
                                            )
                                   )
+        if monster_type == 'explosive':
+            self.monsters[row].add(ExplosiveMonster((self.summon_x, self.TILE_COORDS[row][0][1]), scale = scale))
         else: 
             self.monsters[row].add(Monster((self.summon_x, self.TILE_COORDS[row][0][1]),
                                            scale = scale
@@ -140,7 +143,7 @@ class Grid:
 
         return False
 
-    def apply_tile_effect(self, targets, effect_range, effect_type, lifespan):
+    def apply_tile_effect(self, targets, effect_range, effect_type, lifespan = 60*10):
         tiles = set()
         if effect_range == 'row':
             for row in targets:
@@ -160,7 +163,8 @@ class Grid:
                 scale = 1 + 0.1 * target[0]
                 self.tile_effects[target[0]][target[1]] = IceEffect(self.TILE_COORDS[target[0]][target[1]],
                                                                     scale = scale,
-                                                                    wave_start=target[1])
+                                                                    wave_start=target[1],
+                                                                    lifespan=lifespan)
     def game_over(self):
         for row in self.monsters:
             for monster in row:

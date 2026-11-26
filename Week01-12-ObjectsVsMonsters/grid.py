@@ -121,7 +121,7 @@ class Grid:
                                            )
                                   )
         if monster_type == 'explosive':
-            self.monsters[row].add(ExplosiveMonster((self.summon_x, self.TILE_COORDS[row][0][1]), scale = scale))
+            self.monsters[row].add(ExplosiveMonster((self.summon_x, self.TILE_COORDS[row][0][1]), scale = scale, create_effect_callback = self.apply_tile_effect, row=row))
         else: 
             self.monsters[row].add(Monster((self.summon_x, self.TILE_COORDS[row][0][1]),
                                            scale = scale
@@ -165,6 +165,18 @@ class Grid:
                                                                     scale = scale,
                                                                     wave_start=target[1],
                                                                     lifespan=lifespan)
+        if effect_type == 'explosion':
+            for target in tiles:
+                for row in range(target[0] - 1, target[0]+2):
+                    for col in range(target[1] - 1, target[1]+2):
+                        if 0 <= row < self.num_rows and 0 <= col < self.num_cols:
+                            self.tiles[row][col] = None
+
+                scale = 1 + 0.1 * target[0]
+                SFX['explosion'].play()
+                self.tile_effects[target[0]][target[1]] = ExplosionEffect(self.TILE_COORDS[target[0]][target[1]],
+                                                                          scale = scale,
+                                                                          lifespan=lifespan)
     def game_over(self):
         for row in self.monsters:
             for monster in row:

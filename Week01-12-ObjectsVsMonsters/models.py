@@ -13,7 +13,7 @@ class GameObject:
         self.scale  = scale
         self.health = health
 
-    def draw(self, surface):
+    def draw(self, surface):        
         blit_pos = self.pos - Vector2(self.width/2, self.height/2)
         surface.blit(self.sprite, blit_pos)
     

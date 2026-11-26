@@ -81,7 +81,7 @@ class Level:
 
 monster_types = {'standard' : 1, 'fortified' : 2, 'explosive' : 3}
 
-LEVEL1 = Level([ Wave(i + 100, monster_types, 10, 180, []) for i in range(5)], 600)
+LEVEL1 = Level([ Wave(i + 1, monster_types, 10, 180, []) for i in range(5)], 600)
 LEVEL2 = Level([ Wave(2*i + 1, monster_types, 10, 180, []) for i in range(5)], 600)
 LEVEL3 = Level([ Wave((i + 1)**2, monster_types, 10, 180, []) for i in range(5)], 600)
 

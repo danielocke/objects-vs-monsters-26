@@ -15,7 +15,7 @@ SFX = {'microwave'   : mixer.Sound(path.join(SFX_PATH, 'microwave.mp3')),
        'growl'       : mixer.Sound(path.join(SFX_PATH, 'growl.mp3')),
        'impact'      : mixer.Sound(path.join(SFX_PATH, 'impact.mp3')),
        'freeze'      : mixer.Sound(path.join(SFX_PATH, 'freeze.mp3')),
-
+       'explosion'   : mixer.Sound(path.join(SFX_PATH, 'explosion.mp3')),
       }
 
 SFX['toaster'].set_volume(0.10)

@@ -56,8 +56,8 @@ class Game:
         self.current_level = 0
 
     def main_loop(self):
-        pygame.mixer.music.play(loops = -1)
-        pygame.mixer.music.set_volume(0.2)
+        #pygame.mixer.music.play(loops = -1)
+        #pygame.mixer.music.set_volume(0.2)
         while True:
             self._process_input()
             self._process_game_logic()
